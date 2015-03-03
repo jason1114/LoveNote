@@ -52,9 +52,6 @@ public final class GlobalContext extends Application {
         return handler;
     }
 
-
-
-
     public DisplayMetrics getDisplayMetrics() {
         if (displayMetrics != null) {
             return displayMetrics;
