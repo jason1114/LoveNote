@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">爱之笔记</string>
+
+    <!-- account login -->
+    <string name="login">授权</string>
+    <string name="refresh">刷新</string>
+    <string name="add_account">添加</string>
+    <string name="account_token_has_expired">%s 的授权已经过期，请重新授权</string>
+    <string name="timeout">网络有问题，连不上</string>
+    <string name="unknown_sina_network_error">新浪微博某些网络节点又出故障，换个网络试试</string>
+    <string name="you_cancel_login">你取消了授权</string>
+    <string name="sina_server_error">检测到你跳转到错误页面，这是因为新浪微博第三方认证服务器出错，多次重复操作依然不行的话尝试换网络，四次元无能为力</string>
+    <string name="ok">确定</string>
+    <string name="oauthing">授权中</string>
+    <string name="login_success">授权成功</string>
+    <string name="update_account_success">已有该帐号，授权信息更新成功</string>
+    <string name="token_expires_in_time">请注意，根据新浪微博的平台政策，刚添加的帐号会在 %s
+        天后过期，到时需要重新登录，在授权过期之前重复登陆不会刷新剩余天数</string>
+    <string name="oauth_login">网页授权</string>
+    <string name="account_management">帐号管理</string>
+    <string name="token_has_expired">已过期</string>
+    <string name="delete">删除</string>
+    <string name="please_deleted_cache_dir">权限出错，无法读取存储空间，需要用户手动删除SD卡下的
+        /Android/data/org.qii.weiciyuan 目录</string>
+    <string name="something_error">发生故障</string>
+
+    <!-- time -->
+    <string name="year">年前</string>
+    <string name="month">月前</string>
+    <string name="day">天前</string>
+    <string name="hour">小时前</string>
+    <string name="min">分钟前</string>
+    <string name="sec">秒前</string>
+    <string name="justnow">刚刚</string>
+    <string name="yesterday">昨天</string>
+    <string name="the_day_before_yesterday">前天</string>
+    <string name="today">今天</string>
+    <string name="date_format">M月d日 HH:mm</string>
+    <string name="year_format">yyyy年 M月d日 HH:mm</string>
+
+    <!-- drawer menu -->
+    <string name="home">首页</string>
+    <string name="logout">注销</string>
+    <string name="dont_have_other_account">没有多余帐号可供切换</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- top tip bar-->
+    <string name="new_messages_count">%s条新消息</string>
+
+    <!-- list view-->
+    <string name="empty">空</string>
+
+    <!--write activity -->
+    <string name="write_weibo">写笔记</string>
+
+    <!-- theme -->
+    <string name="switch_to_another_theme">切换主题</string>
+
+    <!-- action bar -->
+    <string name="my_notes">我的笔记</string>
+
+    <!-- nodes -->
+    <string name="users">users</string>
+    <string name="notes">notes</string>
+    <string name="note_id">note_id</string>
+    <string name="note_content">note_content</string>
+    <string name="note_create_at">note_create_at</string>
+
+    <!-- write note -->
+    <string name="dont_have_the_last_picture">没有找到拍过的照片</string>
+    <string name="dont_have_camera_app">该设备没有拍照应用</string>
+    <string name="cant_insert_album">发生意外，无法写入相册</string>
+    <string name="share_failed_because_of_no_account">请先登陆再写笔记哦</string>
+    <string name="clear_content">清空内容</string>
+    <string name="dont_have_account">没用可用的微博帐号</string>
+    <string name="content_cant_be_empty">内容不能为空</string>
+    <string name="content_cant_be_empty_and_dont_have_account">内容不能为空，当前也没可用的微博帐号</string>
+    <string name="are_you_sure">确定吗？</string>
+    <string name="ask_clear">清空内容？</string>
+    <string name="clear">清空</string>
+    <string name="cancel">取消</string>
+    <string name="send">发送</string>
+    <string name="say_something">说点什么吧……</string>
+</resources>
