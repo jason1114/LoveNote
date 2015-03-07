@@ -1,4 +1,4 @@
-package io.github.jason1114.lovenote.ui;
+package io.github.jason1114.lovenote.main;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.AccountBean;
 import io.github.jason1114.lovenote.db.AccountDBTask;
+import io.github.jason1114.lovenote.ui.AbstractAppActivity;
 import io.github.jason1114.lovenote.utils.BitmapDownloader;
 import io.github.jason1114.lovenote.utils.GlobalContext;
 import io.github.jason1114.lovenote.utils.SettingUtility;

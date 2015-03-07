@@ -1,4 +1,4 @@
-package io.github.jason1114.lovenote.ui;
+package io.github.jason1114.lovenote.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -18,7 +18,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -37,6 +36,7 @@ import io.github.jason1114.lovenote.bean.UserBean;
 import io.github.jason1114.lovenote.db.AccountDBTask;
 import io.github.jason1114.lovenote.network.HttpMethod;
 import io.github.jason1114.lovenote.network.HttpUtility;
+import io.github.jason1114.lovenote.ui.AbstractAppActivity;
 import io.github.jason1114.lovenote.utils.AppLogger;
 import io.github.jason1114.lovenote.utils.MyAsyncTask;
 import io.github.jason1114.lovenote.utils.OAuthDao;

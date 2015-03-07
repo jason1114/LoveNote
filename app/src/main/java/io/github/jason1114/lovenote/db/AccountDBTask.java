@@ -15,7 +15,7 @@ import java.util.Set;
 
 import io.github.jason1114.lovenote.bean.AccountBean;
 import io.github.jason1114.lovenote.bean.UserBean;
-import io.github.jason1114.lovenote.ui.OAuthActivity;
+import io.github.jason1114.lovenote.main.OAuthActivity;
 import io.github.jason1114.lovenote.utils.AppLogger;
 
 /**

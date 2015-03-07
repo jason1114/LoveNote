@@ -26,6 +26,7 @@ import io.github.jason1114.lovenote.bean.AccountBean;
 import io.github.jason1114.lovenote.bean.MessageBean;
 import io.github.jason1114.lovenote.bean.UserBean;
 import io.github.jason1114.lovenote.firebase.FireBaseService;
+import io.github.jason1114.lovenote.main.WriteNoteActivity;
 
 public class NoteListFragment extends Fragment {
     private static final String ACCOUNT_BEAN = "mAccountBean";

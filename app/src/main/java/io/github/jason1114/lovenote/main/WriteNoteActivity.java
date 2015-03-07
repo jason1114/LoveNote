@@ -1,4 +1,4 @@
-package io.github.jason1114.lovenote.ui;
+package io.github.jason1114.lovenote.main;
 
 import android.app.ActionBar;
 import android.content.ContentValues;
@@ -7,28 +7,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 
-import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +31,10 @@ import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.AccountBean;
 import io.github.jason1114.lovenote.file.FileLocationMethod;
 import io.github.jason1114.lovenote.firebase.FireBaseService;
+import io.github.jason1114.lovenote.ui.AbstractAppActivity;
+import io.github.jason1114.lovenote.ui.CheatSheet;
+import io.github.jason1114.lovenote.ui.ClearContentDialog;
+import io.github.jason1114.lovenote.ui.KeyboardControlEditText;
 import io.github.jason1114.lovenote.utils.GlobalContext;
 import io.github.jason1114.lovenote.utils.ImageUtility;
 import io.github.jason1114.lovenote.utils.TextNumWatcher;
@@ -49,7 +47,7 @@ import io.github.jason1114.lovenote.utils.ViewUtility;
  */
 public class WriteNoteActivity extends AbstractAppActivity
         implements DialogInterface.OnClickListener,
-        ClearContentDialog.IClear{
+        ClearContentDialog.IClear {
 
     private static final int CAMERA_RESULT = 0;
     private static final int PIC_RESULT = 1;

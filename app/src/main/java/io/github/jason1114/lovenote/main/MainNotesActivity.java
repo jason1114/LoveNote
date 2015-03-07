@@ -1,4 +1,4 @@
-package io.github.jason1114.lovenote.ui;
+package io.github.jason1114.lovenote.main;
 
 import android.app.ActionBar;
 import android.content.Intent;
@@ -19,6 +19,9 @@ import com.slidingmenu.lib.SlidingMenu;
 import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.AccountBean;
 import io.github.jason1114.lovenote.bean.UserBean;
+import io.github.jason1114.lovenote.ui.LeftMenuFragment;
+import io.github.jason1114.lovenote.ui.MainNotesParentActivity;
+import io.github.jason1114.lovenote.ui.NoteListFragment;
 import io.github.jason1114.lovenote.utils.AppEventAction;
 import io.github.jason1114.lovenote.utils.BundleArgsConstants;
 import io.github.jason1114.lovenote.utils.GlobalContext;
