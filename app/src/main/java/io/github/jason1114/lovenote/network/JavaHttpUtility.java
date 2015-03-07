@@ -270,7 +270,6 @@ public class JavaHttpUtility {
     public String doGet(String urlStr, Map<String, String> param) throws Exception {
         GlobalContext globalContext = GlobalContext.getInstance();
         String errorStr = globalContext.getString(R.string.timeout);
-        globalContext = null;
         InputStream is = null;
         try {
 

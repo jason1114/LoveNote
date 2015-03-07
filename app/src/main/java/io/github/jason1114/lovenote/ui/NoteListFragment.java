@@ -81,11 +81,26 @@ public class NoteListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         mFireBaseData = FireBaseService.getInstance();
         String userNodeName = mAccountBean.getUid();
         Firebase userNode = mFireBaseData.child(getString(R.string.users)).child(userNodeName);
         Firebase notesNode = userNode.child(getString(R.string.notes));
         notesNode.addChildEventListener(notesChangeListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        String userNodeName = mAccountBean.getUid();
+        Firebase userNode = mFireBaseData.child(getString(R.string.users)).child(userNodeName);
+        Firebase notesNode = userNode.child(getString(R.string.notes));
+        notesNode.removeEventListener(notesChangeListener);
     }
 
     @Override

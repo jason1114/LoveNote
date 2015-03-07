@@ -90,6 +90,12 @@ public class Utility {
                 && (account.getExpiresTime() == 0
                 || (System.currentTimeMillis()) < account.getExpiresTime());
     }
+
+    /**
+     * return string in 'key1=value1&key2=value2' format
+     * @param param
+     * @return
+     */
     public static String encodeUrl(Map<String, String> param) {
         if (param == null) {
             return "";
@@ -103,6 +109,7 @@ public class Utility {
         for (String key : keys) {
             String value = param.get(key);
             //pain...EditMyProfileDao params' values can be empty
+            // the value of 'description' and 'url' can be null
             if (!TextUtils.isEmpty(value) || key.equals("description") || key.equals("url")) {
                 if (first) {
                     first = false;

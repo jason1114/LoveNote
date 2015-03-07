@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,11 +18,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -31,6 +35,8 @@ import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.AccountBean;
 import io.github.jason1114.lovenote.bean.UserBean;
 import io.github.jason1114.lovenote.db.AccountDBTask;
+import io.github.jason1114.lovenote.network.HttpMethod;
+import io.github.jason1114.lovenote.network.HttpUtility;
 import io.github.jason1114.lovenote.utils.AppLogger;
 import io.github.jason1114.lovenote.utils.MyAsyncTask;
 import io.github.jason1114.lovenote.utils.OAuthDao;
@@ -45,11 +51,14 @@ public class OAuthActivity extends AbstractAppActivity {
 
     private WebView webView;
     private MenuItem refreshItem;
+    private GetAccessTokenTask taskToGetAccessToken;
 
+    private String codeLastTime;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.oauthactivity_layout);
+        taskToGetAccessToken = new GetAccessTokenTask(this);
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setTitle(getString(R.string.login));
@@ -71,7 +80,7 @@ public class OAuthActivity extends AbstractAppActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        webView.clearCache(true);
+//        webView.clearCache(true);
     }
 
     @Override
@@ -122,11 +131,21 @@ public class OAuthActivity extends AbstractAppActivity {
     private String getWeiboOAuthUrl() {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("client_id", URLHelper.APP_KEY);
-        parameters.put("response_type", "token");
+        parameters.put("response_type", "code");
         parameters.put("redirect_uri", URLHelper.DIRECT_URL);
         parameters.put("display", "mobile");
-        return URLHelper.URL_OAUTH2_ACCESS_AUTHORIZE + "?" + Utility.encodeUrl(parameters)
-                + "&scope=friendships_groups_read,friendships_groups_write";
+        return URLHelper.URL_OAUTH2_ACCESS_AUTHORIZE + "?" + Utility.encodeUrl(parameters);
+//                + "&scope=friendships_groups_read,friendships_groups_write";
+    }
+
+    private static Map<String,String> getAccessTokenParameter(String code) {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("client_id", URLHelper.APP_KEY);
+        parameters.put("client_secret", URLHelper.APP_SECRET);
+        parameters.put("redirect_uri", URLHelper.DIRECT_URL);
+        parameters.put("grant_type", "authorization_code");
+        parameters.put("code", code);
+        return parameters;
     }
 
     private class WeiboWebViewClient extends WebViewClient {
@@ -163,27 +182,34 @@ public class OAuthActivity extends AbstractAppActivity {
         }
     }
 
+    private void handleAccessTokenUrl(String code) {
+        try {
+            if (code != null && !code.equals(codeLastTime)) {
+                taskToGetAccessToken.execute(code);
+                codeLastTime = code;
+            }
+        } catch (Exception e) {
+            Toast.makeText(OAuthActivity.this, getString(R.string.you_cancel_login),
+                    Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
     private void handleRedirectUrl(WebView view, String url) {
         Bundle values = Utility.parseUrl(url);
         String error = values.getString("error");
         String error_code = values.getString("error_code");
-
+        String code = values.getString("code");
         Intent intent = new Intent();
         intent.putExtras(values);
 
-        if (error == null && error_code == null) {
-
-            String access_token = values.getString("access_token");
-            String expires_time = values.getString("expires_in");
-            setResult(RESULT_OK, intent);
-            new OAuthTask(this).execute(access_token, expires_time);
+        if (error == null && error_code == null && !TextUtils.isEmpty(code)) {
+            handleAccessTokenUrl(code);
         } else {
             Toast.makeText(OAuthActivity.this, getString(R.string.you_cancel_login),
                     Toast.LENGTH_SHORT).show();
             finish();
         }
     }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -203,7 +229,7 @@ public class OAuthActivity extends AbstractAppActivity {
         private WeakReference<OAuthActivity> oAuthActivityWeakReference;
 
         private OAuthTask(OAuthActivity activity) {
-            oAuthActivityWeakReference = new WeakReference<OAuthActivity>(activity);
+            oAuthActivityWeakReference = new WeakReference<>(activity);
         }
 
         @Override
@@ -278,6 +304,42 @@ public class OAuthActivity extends AbstractAppActivity {
         }
     }
 
+    private static class GetAccessTokenTask extends MyAsyncTask<String, UserBean, Bundle>{
+        private WeakReference<OAuthActivity> oAuthActivityWeakReference;
+
+        private GetAccessTokenTask(OAuthActivity activity) {
+            oAuthActivityWeakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected Bundle doInBackground(String... params){
+            String code = params[0];
+            Map<String,String> postParams = getAccessTokenParameter(code);
+            try {
+                String requestUrl = URLHelper.URL_OAUTH2_ACCESS_TOKEN + "?" + Utility.encodeUrl(postParams);
+                String content = HttpUtility.getInstance().executeNormalTask(HttpMethod.Post, requestUrl, postParams);
+                JSONObject json = new JSONObject(content);
+                String accessToken = json.getString("access_token");
+                String expiresTime = json.getString("expires_in");
+                Bundle values = new Bundle();
+                values.putString("access_token", accessToken);
+                values.putString("expires_in", expiresTime);
+                Intent intent = new Intent();
+                intent.putExtras(values);
+                oAuthActivityWeakReference.get().setResult(RESULT_OK, intent);
+                new OAuthTask(oAuthActivityWeakReference.get()).execute(accessToken, expiresTime);
+                return values;
+            } catch (Exception e) {
+                AppLogger.e(e.getLocalizedMessage());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bundle bundle) {
+            super.onPostExecute(bundle);
+        }
+    }
     @Override
     protected void onPause() {
         super.onPause();

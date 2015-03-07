@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">爱之笔记</string>
+    <string name="app_name">简Note</string>
 
     <!-- account login -->
     <string name="login">授权</string>

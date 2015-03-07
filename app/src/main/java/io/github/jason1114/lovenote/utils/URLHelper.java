@@ -11,15 +11,14 @@ public class URLHelper {
     //login
     public static final String UID = URL_SINA_WEIBO + "account/get_uid.json";
     public static final String URL_OAUTH2_ACCESS_AUTHORIZE = "https://api.weibo.com/oauth2/authorize";
+    public static final String URL_OAUTH2_ACCESS_TOKEN = "https://api.weibo.com/oauth2/access_token";
+//    public static final String APP_KEY = Utility.rot47("`_edd``d`b");
+    public static final String APP_KEY = Utility.rot47("`bea_g_db_");
 
-    public static final String APP_KEY = Utility.rot47("`_edd``d`b");
-
-    public static final String APP_SECRET = Utility.rot47("57cag6gg226g35b`7a_cg`5`ch4gde65");
+    public static final String APP_SECRET = "d699ceaaddbea9cc737e13d2e2576c8c";
 
     public static final String DIRECT_URL = Utility
             .rot47("9EEADi^^2A:]H6:3@]4@>^@2FE9a^5672F=E]9E>=");
-
-
     //main timeline
     public static final String FRIENDS_TIMELINE = URL_SINA_WEIBO + "statuses/friends_timeline.json";
     public static final String COMMENTS_MENTIONS_TIMELINE = URL_SINA_WEIBO + "comments/mentions.json";
