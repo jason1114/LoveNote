@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -12,6 +13,7 @@ import android.view.Display;
 
 
 import io.github.jason1114.lovenote.bean.AccountBean;
+import io.github.jason1114.lovenote.main.UpdateCheckService;
 
 /**
  * User: Jiang Qi
@@ -42,8 +44,9 @@ public final class GlobalContext extends Application {
         super.onCreate();
         globalContext = this;
         buildCache();
+        Intent i = new Intent(this, UpdateCheckService.class);
+        startService(i);
     }
-
     public static GlobalContext getInstance() {
         return globalContext;
     }
