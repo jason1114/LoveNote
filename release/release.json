@@ -3,10 +3,5 @@
        "version_name":"0.1",
        "release_info":"初始版本",
        "apk":"lovenote.apk"
-    },
-    "2":{
-           "version_name":"0.2",
-           "release_info":"加入自动更新功能",
-           "apk":"lovenote.apk"
-     }
+    }
 }
