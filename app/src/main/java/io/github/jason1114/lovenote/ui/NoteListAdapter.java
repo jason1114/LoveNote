@@ -66,6 +66,7 @@ public class NoteListAdapter extends BaseAdapter {
         long timestamp = message.getMills();
         if (mData.size() == 0) {
             mData.add(message);
+            return;
         }
         for (int i=0; i<mData.size(); i++) {
             if (timestamp>=mData.get(i).getMills()) {
