@@ -29,6 +29,7 @@ import java.util.Map;
 
 import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.AccountBean;
+import io.github.jason1114.lovenote.bean.MessageBean;
 import io.github.jason1114.lovenote.file.FileLocationMethod;
 import io.github.jason1114.lovenote.firebase.FireBaseService;
 import io.github.jason1114.lovenote.ui.AbstractAppActivity;
@@ -59,6 +60,8 @@ public class WriteNoteActivity extends AbstractAppActivity
     private AccountBean accountBean;
     protected String token = "";
 
+    private MessageBean oldMessage;
+
     private String picPath = "";
     private Uri imageFileUri = null;
 
@@ -75,17 +78,12 @@ public class WriteNoteActivity extends AbstractAppActivity
         return intent;
     }
 
-    public static Intent startBecauseSendFailed(Context context,
-            AccountBean accountBean,
-            String content,
-            String picPath,
-            String failedReason) {
-        Intent intent = new Intent(context, WriteNoteActivity.class);
-        intent.setAction(WriteNoteActivity.ACTION_SEND_FAILED);
+    public static Intent startForEdit(AccountBean accountBean, MessageBean message) {
+        Intent intent = new Intent(GlobalContext.getInstance(),WriteNoteActivity.class);
+        intent.putExtra("token", accountBean.getAccessToken());
         intent.putExtra("account", accountBean);
-        intent.putExtra("content", content);
-        intent.putExtra("failedReason", failedReason);
-        intent.putExtra("picPath", picPath);
+        intent.putExtra("message", message);
+        intent.putExtra("content", message.getListViewSpannableString().toString());
         return intent;
     }
 
@@ -289,7 +287,7 @@ public class WriteNoteActivity extends AbstractAppActivity
 
 
     private void handleNormalOperation(Intent intent) {
-        accountBean = (AccountBean) intent.getParcelableExtra("account");
+        accountBean = intent.getParcelableExtra("account");
         token = accountBean.getAccessToken();
         getActionBar().setSubtitle(accountBean.getUserNick());
         String contentStr = intent.getStringExtra("content");
@@ -297,6 +295,7 @@ public class WriteNoteActivity extends AbstractAppActivity
             content.setText(contentStr + " ");
             content.setSelection(content.getText().toString().length());
         }
+        oldMessage = intent.getParcelableExtra("message");
     }
 
     private void buildInterface() {
@@ -341,7 +340,7 @@ public class WriteNoteActivity extends AbstractAppActivity
         container = (RelativeLayout) findViewById(R.id.container);
     }
 
-    private void getAccountInfo() {
+    private void setUpDefaultAccountInfo() {
         AccountBean account = GlobalContext.getInstance().getAccountBean();
         if (account != null) {
             accountBean = account;
@@ -351,7 +350,7 @@ public class WriteNoteActivity extends AbstractAppActivity
     }
 
     private void handleSendText(Intent intent) {
-        getAccountInfo();
+        setUpDefaultAccountInfo();
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (!TextUtils.isEmpty(sharedText)) {
             content.setText(sharedText);
@@ -362,7 +361,7 @@ public class WriteNoteActivity extends AbstractAppActivity
     private void handleSendImage(Intent intent) {
         handleSendText(intent);
 
-        getAccountInfo();
+        setUpDefaultAccountInfo();
 
         Uri sharedImageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         if (sharedImageUri != null) {
@@ -458,9 +457,14 @@ public class WriteNoteActivity extends AbstractAppActivity
         Firebase userNode = firebase.child(getString(R.string.users)).child(userNodeName);
         Firebase notesNode = userNode.child(getString(R.string.notes));
         Map<String, Object> data = new HashMap<>();
-        data.put(getString(R.string.note_create_at), new Date().getTime());
         data.put(getString(R.string.note_content), contentString);
-        notesNode.push().setValue(data);
+        if (oldMessage == null) {
+            data.put(getString(R.string.note_create_at), new Date().getTime());
+            notesNode.push().setValue(data);
+        } else {
+            data.put(getString(R.string.note_create_at), oldMessage.getMills());
+            notesNode.child(oldMessage.getId()).setValue(data);
+        }
         finish();
     }
 

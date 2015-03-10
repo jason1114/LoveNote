@@ -1,5 +1,7 @@
 package io.github.jason1114.lovenote.utils;
 
+import com.firebase.client.Firebase;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
@@ -46,6 +48,7 @@ public final class GlobalContext extends Application {
         buildCache();
         Intent i = new Intent(this, UpdateCheckService.class);
         startService(i);
+        Firebase.setAndroidContext(this);
     }
     public static GlobalContext getInstance() {
         return globalContext;

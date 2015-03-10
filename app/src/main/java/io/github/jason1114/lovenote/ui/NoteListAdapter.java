@@ -61,8 +61,34 @@ public class NoteListAdapter extends BaseAdapter {
         checkedBG = ThemeUtility.getColor(R.attr.listview_checked_color);
     }
 
-    public List<MessageBean> getData() {
-        return mData;
+
+    public void addMessage(MessageBean message) {
+        long timestamp = message.getMills();
+        if (mData.size() == 0) {
+            mData.add(message);
+        }
+        for (int i=0; i<mData.size(); i++) {
+            if (timestamp>=mData.get(i).getMills()) {
+                mData.add(i, message);
+                break;
+            }
+        }
+    }
+
+    public void removeMessage(MessageBean message) {
+        for (int i=0; i<mData.size(); i++) {
+            if (message.getId().equals(mData.get(i).getId())) {
+                mData.remove(i);
+            }
+        }
+    }
+
+    public void changeMessage (MessageBean message) {
+        for (int i=0; i<mData.size(); i++) {
+            if (message.getId().equals(mData.get(i).getId())) {
+                mData.set(i, message);
+            }
+        }
     }
 
     public static class ViewHolder {

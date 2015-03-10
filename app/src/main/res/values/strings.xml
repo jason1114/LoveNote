@@ -67,7 +67,8 @@
     <string name="note_id">note_id</string>
     <string name="note_content">note_content</string>
     <string name="note_create_at">note_create_at</string>
-
+    <string name="info">.info</string>
+    <string name="connected">connected</string>
     <!-- write note -->
     <string name="dont_have_the_last_picture">没有找到拍过的照片</string>
     <string name="dont_have_camera_app">该设备没有拍照应用</string>
