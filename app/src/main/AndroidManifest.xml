@@ -26,12 +26,15 @@
         <activity android:name=".main.OAuthActivity" />
         <activity android:name=".main.MainNotesActivity" />
         <activity android:name=".main.WriteNoteActivity" />
+        <activity android:name=".main.RelationActivity" />
 
         <service
             android:name=".main.UpdateCheckService"
             android:enabled="true"
             android:exported="false" >
         </service>
+
+
     </application>
 
 </manifest>

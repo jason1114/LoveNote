@@ -1,5 +1,6 @@
-package io.github.jason1114.lovenote.ui;
+package io.github.jason1114.lovenote.main;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -31,11 +35,15 @@ import io.github.jason1114.lovenote.bean.UserBean;
 import io.github.jason1114.lovenote.firebase.FireBaseService;
 import io.github.jason1114.lovenote.main.MainNotesActivity;
 import io.github.jason1114.lovenote.main.WriteNoteActivity;
+import io.github.jason1114.lovenote.ui.NoteListAdapter;
 import io.github.jason1114.lovenote.utils.GlobalContext;
 
 public class NoteListFragment extends Fragment {
     private static final String ACCOUNT_BEAN = "mAccountBean";
     private static final String TOKEN = "mToken";
+
+    private TextView titleText;
+    private View clickToTop;
 
     private AccountBean mAccountBean;
     private String mToken;
@@ -75,6 +83,24 @@ public class NoteListFragment extends Fragment {
         msg.setUser(mUserSelf);
         msg.setMills((Long)newNote.get(getString(R.string.note_create_at)));
         return msg;
+    }
+
+
+    private void buildCustomActionBarTitle() {
+        View title = getActivity().getLayoutInflater().inflate(R.layout.maintimelineactivity_title_layout, null);
+        titleText = (TextView) title.findViewById(R.id.tv_title);
+        clickToTop = title.findViewById(R.id.tv_click_to_top);
+        clickToTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "clickToTop-clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.RIGHT);
+        getActivity().getActionBar().setCustomView(title, layoutParams);
+        getActivity().getActionBar().setDisplayShowCustomEnabled(true);
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -155,7 +181,6 @@ public class NoteListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getActivity().getActionBar().setIcon(R.drawable.ic_menu_home);
         parentActivity = ((MainNotesActivity) getActivity());
     }
 
@@ -163,6 +188,10 @@ public class NoteListFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.actionbar_menu_friendstimelinefragment, menu);
+        getActivity().getActionBar().setIcon(R.drawable.ic_menu_home);
+        // 1. get title text
+        // 2. set up click to top button and write weibo button
+        buildCustomActionBarTitle();
     }
 
     @Override
@@ -194,7 +223,7 @@ public class NoteListFragment extends Fragment {
             mAdapter.addMessage(msg);
 
             if (GlobalContext.getInstance().getCurrentRunningActivity() == parentActivity &&
-                    parentActivity.getMenuFragment().getCurrentIndex() == LeftMenuFragment.HOME_INDEX ) {
+                    parentActivity.getMenuFragment().getCurrentIndex() == LeftMenuFragment.Page.HOME_INDEX ) {
                 mAdapter.notifyDataSetChanged();
             }
         }
@@ -204,7 +233,7 @@ public class NoteListFragment extends Fragment {
             MessageBean msg = noteDataSnapshotToMessageBean(dataSnapshot);
             mAdapter.changeMessage(msg);
             if (GlobalContext.getInstance().getCurrentRunningActivity() == parentActivity &&
-                    parentActivity.getMenuFragment().getCurrentIndex() == LeftMenuFragment.HOME_INDEX ) {
+                    parentActivity.getMenuFragment().getCurrentIndex() == LeftMenuFragment.Page.HOME_INDEX ) {
                 mAdapter.notifyDataSetChanged();
             }
         }
@@ -214,7 +243,7 @@ public class NoteListFragment extends Fragment {
             MessageBean msg = noteDataSnapshotToMessageBean(dataSnapshot);
             mAdapter.removeMessage(msg);
             if (GlobalContext.getInstance().getCurrentRunningActivity() == parentActivity &&
-                    parentActivity.getMenuFragment().getCurrentIndex() == LeftMenuFragment.HOME_INDEX ) {
+                    parentActivity.getMenuFragment().getCurrentIndex() == LeftMenuFragment.Page.HOME_INDEX ) {
                 mAdapter.notifyDataSetChanged();
             }
         }

@@ -19,9 +19,9 @@ import com.slidingmenu.lib.SlidingMenu;
 import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.AccountBean;
 import io.github.jason1114.lovenote.bean.UserBean;
-import io.github.jason1114.lovenote.ui.LeftMenuFragment;
+import io.github.jason1114.lovenote.main.LeftMenuFragment;
 import io.github.jason1114.lovenote.ui.MainNotesParentActivity;
-import io.github.jason1114.lovenote.ui.NoteListFragment;
+import io.github.jason1114.lovenote.main.NoteListFragment;
 import io.github.jason1114.lovenote.utils.AppEventAction;
 import io.github.jason1114.lovenote.utils.BundleArgsConstants;
 import io.github.jason1114.lovenote.utils.GlobalContext;
@@ -42,8 +42,7 @@ public class MainNotesActivity extends MainNotesParentActivity {
     private AccountBean accountBean;
 
     private ScrollableListFragment currentFragment;
-    private TextView titleText;
-    private View clickToTop;
+
 
     public static interface ScrollableListFragment {
         public void scrollToTop();
@@ -78,18 +77,18 @@ public class MainNotesActivity extends MainNotesParentActivity {
         return accountBean.getAccessToken();
     }
 
-    public void setTitle(String title) {
-        if (TextUtils.isEmpty(title)) {
-            titleText.setVisibility(View.GONE);
-        } else {
-            titleText.setText(title);
-            titleText.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void setTitle(int res) {
-        setTitle(getString(res));
-    }
+//    public void setTitle(String title) {
+//        if (TextUtils.isEmpty(title)) {
+//            titleText.setVisibility(View.GONE);
+//        } else {
+//            titleText.setText(title);
+//            titleText.setVisibility(View.VISIBLE);
+//        }
+//    }
+//
+//    public void setTitle(int res) {
+//        setTitle(getString(res));
+//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -136,9 +135,6 @@ public class MainNotesActivity extends MainNotesParentActivity {
         } else {
             buildPadInterface(savedInstanceState);
         }
-        // 1. get title text
-        // 2. set up click to top button and write weibo button
-        buildCustomActionBarTitle(savedInstanceState);
 
         if (savedInstanceState == null) {
             // get a fragment transaction, add all fragments then hide all of them
@@ -157,16 +153,22 @@ public class MainNotesActivity extends MainNotesParentActivity {
     //init fragments
     private void initFragments() {
         Fragment noteList = getNoteListFragment();
+        Fragment relation = getRelationFragment();
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if (!noteList.isAdded()) {
-            fragmentTransaction
-                    .add(R.id.menu_right_fl, noteList, NoteListFragment.class.getName());
-            fragmentTransaction.hide(noteList);
-        }
+        addAndHide(fragmentTransaction, noteList);
+        addAndHide(fragmentTransaction, relation);
         if (!fragmentTransaction.isEmpty()) {
             fragmentTransaction.commit();
             getSupportFragmentManager().executePendingTransactions();
+        }
+    }
+
+    private void addAndHide(FragmentTransaction fragmentTransaction, Fragment fragment) {
+        if (!fragment.isAdded()) {
+            fragmentTransaction
+                    .add(R.id.menu_right_fl, fragment, fragment.getClass().getName());
+            fragmentTransaction.hide(fragment);
         }
     }
 
@@ -208,23 +210,7 @@ public class MainNotesActivity extends MainNotesParentActivity {
         });
     }
 
-    private void buildCustomActionBarTitle(Bundle savedInstanceState) {
-        View title = getLayoutInflater().inflate(R.layout.maintimelineactivity_title_layout, null);
-        titleText = (TextView) title.findViewById(R.id.tv_title);
-        clickToTop = title.findViewById(R.id.tv_click_to_top);
-        clickToTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainNotesActivity.this, "clickToTop-clicked", Toast.LENGTH_SHORT).show();
-                scrollCurrentListViewToTop();
-            }
-        });
-        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
-                Gravity.RIGHT);
-        getActionBar().setCustomView(title, layoutParams);
-        getActionBar().setDisplayShowCustomEnabled(true);
-    }
+
 
     private void buildPhoneInterface(Bundle savedInstanceState) {
         setBehindContentView(R.layout.menu_frame);
@@ -249,10 +235,6 @@ public class MainNotesActivity extends MainNotesParentActivity {
         }
     }
 
-    public View getClickToTopView() {
-        return clickToTop;
-    }
-
     public void setCurrentFragment(ScrollableListFragment fragment) {
         this.currentFragment = fragment;
     }
@@ -263,6 +245,15 @@ public class MainNotesActivity extends MainNotesParentActivity {
                         NoteListFragment.class.getName()));
         if (fragment == null) {
             fragment = NoteListFragment.newInstance(getAccount(), getToken());
+        }
+        return fragment;
+    }
+
+    public RelationFragment getRelationFragment() {
+        RelationFragment fragment = (RelationFragment)getSupportFragmentManager()
+                .findFragmentByTag(RelationFragment.class.getName());
+        if (fragment == null) {
+            fragment = RelationFragment.newInstance(getAccount());
         }
         return fragment;
     }
@@ -333,19 +324,6 @@ public class MainNotesActivity extends MainNotesParentActivity {
     @Override
     protected void onPause() {
         super.onPause();
-    }
-
-    public void saveNavigationPositionToDB() {
-        int navPosition = getMenuFragment().getCurrentIndex() * 10;
-        ActionBar actionBar = getActionBar();
-        int second = 0;
-        if (actionBar.getNavigationMode() != ActionBar.NAVIGATION_MODE_STANDARD) {
-            second = actionBar.getSelectedNavigationIndex();
-        }
-        int result = navPosition + second;
-//        GlobalContext.getInstance().getAccountBean().setNavigationPosition(result);
-//        AccountDBTask
-//                .updateNavigationPosition(GlobalContext.getInstance().getAccountBean(), result);
     }
 
     public LeftMenuFragment getMenuFragment() {

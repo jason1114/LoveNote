@@ -1,4 +1,4 @@
-package io.github.jason1114.lovenote.ui;
+package io.github.jason1114.lovenote.main;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,14 +24,15 @@ import com.slidingmenu.lib.SlidingMenu;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.AccountBean;
 import io.github.jason1114.lovenote.db.AccountDBTask;
 import io.github.jason1114.lovenote.file.FileLocationMethod;
-import io.github.jason1114.lovenote.main.AccountActivity;
-import io.github.jason1114.lovenote.main.MainNotesActivity;
+import io.github.jason1114.lovenote.ui.AbstractAppFragment;
 import io.github.jason1114.lovenote.utils.AppEventAction;
 import io.github.jason1114.lovenote.utils.BitmapDownloader;
 import io.github.jason1114.lovenote.utils.GlobalContext;
@@ -50,7 +51,7 @@ public class LeftMenuFragment extends AbstractAppFragment {
 
     private Layout layout;
 
-    private int currentIndex = -1;
+    private Page currentIndex = Page.values()[0];
 
 //    private int mentionsWeiboUnreadCount = 0;
 //    private int mentionsCommentUnreadCount = 0;
@@ -63,16 +64,19 @@ public class LeftMenuFragment extends AbstractAppFragment {
     private boolean firstStart = true;
 
     private SparseArray<Fragment> rightFragments = new SparseArray<Fragment>();
-
-    public static final int HOME_INDEX = 0;
-    public static final int MENTIONS_INDEX = 1;
-    public static final int COMMENTS_INDEX = 2;
-    public static final int DM_INDEX = 3;
-    public static final int FAV_INDEX = 4;
-    public static final int SEARCH_INDEX = 5;
-    public static final int PROFILE_INDEX = 6;
-    public static final int LOGOUT_INDEX = 7;
-    public static final int SETTING_INDEX = 8;
+    public static enum Page {
+        HOME_INDEX,
+        RELATION_INDEX,
+        LOGOUT_INDEX
+    }
+    private static Map<Page,Integer> pageIndex;
+    static {
+        pageIndex = new HashMap<>();
+        Page[] pages = Page.values();
+        for (int i=0;i<pages.length;i++) {
+            pageIndex.put(pages[i], i);
+        }
+    }
 
     public static LeftMenuFragment newInstance() {
         LeftMenuFragment fragment = new LeftMenuFragment();
@@ -83,7 +87,7 @@ public class LeftMenuFragment extends AbstractAppFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("currentIndex", currentIndex);
+        outState.putSerializable("currentIndex", currentIndex);
         outState.putBoolean("firstStart", firstStart);
     }
 
@@ -91,7 +95,7 @@ public class LeftMenuFragment extends AbstractAppFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            currentIndex = savedInstanceState.getInt("currentIndex");
+            currentIndex = (Page) savedInstanceState.getSerializable("currentIndex");
 //            mentionsWeiboUnreadCount = savedInstanceState.getInt("mentionsWeiboUnreadCount");
 //            mentionsCommentUnreadCount = savedInstanceState.getInt("mentionsCommentUnreadCount");
 //            commentsToMeUnreadCount = savedInstanceState.getInt("commentsToMeUnreadCount");
@@ -103,12 +107,11 @@ public class LeftMenuFragment extends AbstractAppFragment {
             // mention to me, comments that mention to me, comments to me
 //            readUnreadCountFromDB();
         }
-        if (currentIndex == -1) {
-            currentIndex = HOME_INDEX;
-        }
 
-        rightFragments.append(HOME_INDEX,
+        rightFragments.append(pageIndex.get(Page.HOME_INDEX),
                 ((MainNotesActivity) getActivity()).getNoteListFragment());
+        rightFragments.append(pageIndex.get(Page.RELATION_INDEX),
+                ((MainNotesActivity) getActivity()).getRelationFragment());
 
         switchCategory(currentIndex);
 
@@ -116,16 +119,10 @@ public class LeftMenuFragment extends AbstractAppFragment {
         layout.avatar.setAdapter(new AvatarAdapter(layout.avatar));
     }
 
-    public void switchCategory(int position) {
-        switch (position) {
-            case HOME_INDEX:
-                showHomePage(true);
-                break;
-        }
+    public void switchCategory(Page position) {
+        showPage(position,true);
         drawButtonsBackground(position);
-
         buildUnreadCount();
-
         firstStart = false;
     }
 
@@ -145,55 +142,49 @@ public class LeftMenuFragment extends AbstractAppFragment {
 //        startActivity(new Intent(getActivity(), SettingActivity.class));
 //    }
 
-    private boolean showHomePage(boolean reset) {
-        if (currentIndex == HOME_INDEX && !reset) {
+    private void showPage(final Page target, boolean reset) {
+        if (currentIndex == target && !reset) {
             ((MainNotesActivity) getActivity()).getSlidingMenu().showContent();
-            return true;
+            return;
         }
-
+        //sliding menu is open, so make the touch mode fullscreen
         getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-        currentIndex = HOME_INDEX;
-
+        currentIndex = target;
         if (Utility.isDevicePort() && !reset) {
             BroadcastReceiver receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(this);
-                    if (currentIndex == HOME_INDEX) {
-                        showHomePageImp();
+                    if (currentIndex == target) {
+                        showCurrentPageAndHideOthers(target);
                     }
                 }
             };
             LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver,
                     new IntentFilter(AppEventAction.SLIDING_MENU_CLOSED_BROADCAST));
         } else {
-            showHomePageImp();
+            showCurrentPageAndHideOthers(target);
         }
-
         ((MainNotesActivity) getActivity()).getSlidingMenu().showContent();
-
-        return false;
     }
 
-    private void showHomePageImp() {
+
+    private void showCurrentPageAndHideOthers(Page current) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-//        ft.hide(rightFragments.get(MENTIONS_INDEX));
-//        ft.hide(rightFragments.get(COMMENTS_INDEX));
-//        ft.hide(rightFragments.get(SEARCH_INDEX));
-//        ft.hide(rightFragments.get(DM_INDEX));
-//        ft.hide(rightFragments.get(FAV_INDEX));
-//        ft.hide(rightFragments.get(PROFILE_INDEX));
-
-        NoteListFragment fragment = (NoteListFragment) rightFragments.get(HOME_INDEX);
-        ft.show(fragment);
+        Page[] pages = Page.values();
+        for (int i=0; i< pages.length; i++) {
+            Fragment fragment = rightFragments.get(pageIndex.get(pages[i]));
+            if (pages[i] != current && fragment != null) {
+                ft.hide(fragment);
+            }
+        }
+        ft.show(rightFragments.get(pageIndex.get(current)));
         ft.commit();
-//        fragment.buildActionBarNav();
     }
 
 
 
-    public int getCurrentIndex() {
+    public Page getCurrentIndex() {
         return currentIndex;
     }
 
@@ -217,8 +208,10 @@ public class LeftMenuFragment extends AbstractAppFragment {
         layout.nickname = (TextView) view.findViewById(R.id.nickname);
 
         layout.home = (LinearLayout) view.findViewById(R.id.btn_home);
-        layout.logout = (Button) view.findViewById(R.id.btn_logout);
         layout.homeCount = (TextView) view.findViewById(R.id.tv_home_count);
+
+        layout.relation = (Button) view.findViewById(R.id.btn_relation);
+        layout.logout = (Button) view.findViewById(R.id.btn_logout);
 
         return view;
     }
@@ -229,6 +222,7 @@ public class LeftMenuFragment extends AbstractAppFragment {
         super.onViewCreated(view, savedInstanceState);
         layout.home.setOnClickListener(onClickListener);
         layout.logout.setOnClickListener(onClickListener);
+        layout.relation.setOnClickListener(onClickListener);
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -236,8 +230,10 @@ public class LeftMenuFragment extends AbstractAppFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_home:
-                    showHomePage(false);
-                    drawButtonsBackground(HOME_INDEX);
+                    switchCategory(Page.HOME_INDEX);
+                    break;
+                case R.id.btn_relation:
+                    switchCategory(Page.RELATION_INDEX);
                     break;
                 case R.id.btn_logout:
                     showAccountSwitchPage();
@@ -246,11 +242,16 @@ public class LeftMenuFragment extends AbstractAppFragment {
         }
     };
 
-    private void drawButtonsBackground(int position) {
+    private void drawButtonsBackground(Page position) {
         layout.home.setBackgroundResource(R.drawable.btn_drawer_menu);
+        layout.relation.setBackgroundResource(R.drawable.btn_drawer_menu);
+        layout.logout.setBackgroundResource(R.drawable.btn_drawer_menu);
         switch (position) {
             case HOME_INDEX:
                 layout.home.setBackgroundResource(R.color.ics_blue_semi);
+                break;
+            case RELATION_INDEX:
+                layout.relation.setBackgroundResource(R.color.ics_blue_semi);
                 break;
             case LOGOUT_INDEX:
                 layout.logout.setBackgroundResource(R.color.ics_blue_semi);
@@ -260,14 +261,6 @@ public class LeftMenuFragment extends AbstractAppFragment {
 
     private SlidingMenu getSlidingMenu() {
         return ((MainNotesActivity) getActivity()).getSlidingMenu();
-    }
-
-    private void setTitle(int res) {
-        ((MainNotesActivity) getActivity()).setTitle(res);
-    }
-
-    private void setTitle(String title) {
-        ((MainNotesActivity) getActivity()).setTitle(title);
     }
 
     public void setHomeUnreadCount(int count) {
@@ -368,6 +361,8 @@ public class LeftMenuFragment extends AbstractAppFragment {
         TextView nickname;
         LinearLayout home;
         TextView homeCount;
+
+        Button relation;
         Button logout;
     }
 }

@@ -29,6 +29,15 @@
 
 
     <Button
+            style="@style/drawerMenuButton"
+            android:id="@+id/btn_relation"
+            android:text="@string/relation"
+            android:drawableLeft="@drawable/ic_menu_heart"
+            android:layout_weight="0"
+            android:layout_width="match_parent"
+            />
+
+    <Button
         style="@style/drawerMenuButton"
         android:id="@+id/btn_logout"
         android:text="@string/logout"

@@ -20,7 +20,7 @@ import io.github.jason1114.lovenote.bean.UserBean;
 import io.github.jason1114.lovenote.file.FileDownloaderHttpHelper;
 import io.github.jason1114.lovenote.file.FileLocationMethod;
 import io.github.jason1114.lovenote.file.FileManager;
-import io.github.jason1114.lovenote.ui.NoteListFragment;
+import io.github.jason1114.lovenote.main.NoteListFragment;
 
 /**
  * User: qii

@@ -28,6 +28,7 @@ import java.util.WeakHashMap;
 import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.MessageBean;
 import io.github.jason1114.lovenote.bean.UserBean;
+import io.github.jason1114.lovenote.main.NoteListFragment;
 import io.github.jason1114.lovenote.utils.BitmapDownloader;
 import io.github.jason1114.lovenote.utils.IWeiciyuanDrawable;
 import io.github.jason1114.lovenote.utils.SettingUtility;
