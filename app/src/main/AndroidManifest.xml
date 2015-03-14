@@ -13,7 +13,8 @@
         android:name=".utils.GlobalContext"
         android:allowBackup="true"
         android:icon="@drawable/icon"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme_Light">
         <activity
             android:name=".main.AccountActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
@@ -26,7 +27,6 @@
         <activity android:name=".main.OAuthActivity" />
         <activity android:name=".main.MainNotesActivity" />
         <activity android:name=".main.WriteNoteActivity" />
-        <activity android:name=".main.RelationActivity" />
 
         <service
             android:name=".main.UpdateCheckService"

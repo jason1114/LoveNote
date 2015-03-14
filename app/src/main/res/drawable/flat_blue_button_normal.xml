@@ -1,0 +1,9 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/flat_blue_button_pressed"></item>
+    <item android:bottom="3dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="#3498db" />
+        </shape>
+    </item>
+</layer-list>

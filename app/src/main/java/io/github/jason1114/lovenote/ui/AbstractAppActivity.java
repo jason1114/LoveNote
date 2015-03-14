@@ -42,7 +42,7 @@ public class AbstractAppActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme_Light);
+//        setTheme(R.style.AppTheme_Light);
         super.onCreate(savedInstanceState);
         forceShowActionBarOverflowMenu();
         initNFC();

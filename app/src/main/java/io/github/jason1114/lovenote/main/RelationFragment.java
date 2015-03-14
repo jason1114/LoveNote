@@ -1,6 +1,8 @@
 package io.github.jason1114.lovenote.main;
 
 
+import com.cengalabs.flatui.FlatUI;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,9 +10,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import io.github.jason1114.lovenote.R;
 import io.github.jason1114.lovenote.bean.AccountBean;
+import io.github.jason1114.lovenote.utils.GlobalContext;
 
 public class RelationFragment extends Fragment {
 
@@ -43,7 +47,8 @@ public class RelationFragment extends Fragment {
             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.relationfragment_layout, container, false);
-
+        TextView mySecret = (TextView) view.findViewById(R.id.my_secret_value);
+        mySecret.setText(mAccountBean.getUid());
         return view;
     }
 
